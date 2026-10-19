@@ -1,86 +1,80 @@
 from models import Sequencial
 from models import Input, Dense
 import numpy as np
-import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
+import images
 
+list_train_image_x = images.load_mnist_idx("train-images.idx3-ubyte")
+list_train_image_y = images.load_mnist_idx("train-labels.idx1-ubyte")
+N = list_train_image_x.shape[0]
+
+X_train = list_train_image_x.copy()/255
+Y_train = np.eye(10)[list_train_image_y]
+
+
+nb_neurons = 8
 model = Sequencial()
-model.add(Input(shape=1))
-model.add(Dense(2, 'relu'))
-model.add(Dense(1, 'relu'))
+model.add(Input(shape=784))
+model.add(Dense(nb_neurons, 'sigmoid'))
+model.add(Dense(nb_neurons, 'sigmoid'))
+model.add(Dense(10, 'softmax'))
+model.compile("gd")
 
-coeff = np.array([[1, -0.5]])
-biais = np.array([-1,1])
-poids = [coeff,biais]
-model.layers[0].set_weights(poids)
-coeff = np.array([[1.0], [1.0]])
-biais = np.array([0])
-poids = [coeff,biais]
-model.layers[1].set_weights(poids)
 
+model.fit(X_train, Y_train)
+
+list_test_image_x = images.load_mnist_idx("t10k-images.idx3-ubyte")
+X_test = list_test_image_x.copy()/255
+list_test_image_y = images.load_mnist_idx("t10k-labels.idx1-ubyte")
+N2 = list_test_image_x.shape[0]
+right_ones = 0
+
+value_list = [0 for i in range(10)]
+
+for i in range(N2):
+    x = model.predict([X_test[i]])
+    value_list[np.argmax(x[0])] +=1
+    if  np.argmax(x[0]) == list_test_image_y[i]:
+        right_ones += 1
+
+for i in range(len(value_list)):
+    value_list[i] = value_list[i]/N2
+
+print(value_list)
+print("model mean : ", right_ones/N2)
+
+"""
 model_test = Sequencial()
-model_test.add(Input(shape=2))
+model_test.add(Input(shape=1))
+model_test.add(Dense(2, 'sigmoid'))
 model_test.add(Dense(1, 'sigmoid'))
 model_test.compile(optimizer='gd')
 
-coeff = np.array([[0.0],[1.0]])
-biais = np.array([-2.0])
-poids = [coeff,biais]
-model_test.layers[0].set_weights(poids)
+model_test.layers[0].set_weights([[[0.0, 0.0]], [1.0, -1.0]])
+model_test.layers[1].set_weights([[[1.0], [1.0]], [-1.0]])
 
-list_x = [[0, 3], [1, 1.5], [1, 4], [1.5, 2.5], [2, 2.5], [3, 3.5], [3.5, 3.25], [4, 3], [4, 4], [5, 4],
-          [1, 1], [2, 0.5], [2, 2], [3, 1.5], [3, 2.75], [4, 1], [4, 2.5], [4.5, 3], [5, 1], [5, 2.25]]
-list_y = [[0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [1], [1], [1], [1], [1], [1], [1], [1], [1], [1], [1]]
+list_x = [[x*0.2] for x in range(10)]
+for i in range(10):
+    list_x.append([i*0.2+6])
+for i in range(10):
+    list_x.append([i*0.2+3])
+list_y = []
+y = []
+for i in range(20):
+    list_y.append([0.0])
+    y.append(0.0)
+for i in range(10):
+    list_y.append([1.0])
+    y.append(1.0)
 X = np.array(list_x)
-list2_y = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-y = np.array(list2_y)
 
+y = np.array(y)
 
 model_test.fit(list_x, list_y)
-print("model weights : ", model_test.layers[0].weights)
-sortie = model_test.predict(list_x)
 
+entree = np.linspace(0, 8, 1000)
+sortie = model_test.predict([[x] for x in entree])
 
-
-
-
-#Gemini ma généré se code pour afficher le model
-
-# 3. Récupération des poids pour tracer la frontière
-w = model_test.layers[0].weights
-w1, w2 = w[0][0, 0], w[0][1, 0]
-b = w[1][0]
-
-plt.figure(figsize=(8, 6))
-
-# 1. Création d'une grille pour colorer le fond
-xx, yy = np.meshgrid(np.linspace(-1, 6, 200), np.linspace(-1, 5, 200))
-# Évaluation de l'équation de la frontière : w1*x1 + w2*x2 + b
-# Au-dessus de la droite > 0, En dessous < 0
-Z = w1 * xx + w2 * yy + b
-
-# Affichage des zones colorées (bleu au-dessus, rouge en dessous)
-# cmap='coolwarm_r' ou 'bwr' (bleu/blanc/rouge)
-plt.contourf(xx, yy, Z, levels=[-np.inf, 0, np.inf], colors=['blue', 'red'], alpha=0.3)
-
-# 2. Tracé de la frontière exacte (la ligne séparatrice)
-x1_vals = np.linspace(-1, 6, 100)
-if w2 != 0:
-    x2_vals = (-w1 * x1_vals - b) / w2
-    plt.plot(x1_vals, x2_vals, color='green', linewidth=2, label='Frontière du modèle')
-
-# 3. Tracé des points par-dessus
-plt.scatter(X[y == 0, 0], X[y == 0, 1], color='blue', label='Classe 0 (Réel)', s=60, edgecolors='k')
-plt.scatter(X[y == 1, 0], X[y == 1, 1], color='red', label='Classe 1 (Réel)', s=60, edgecolors='k')
-
-# Configuration du graphique
-plt.axhline(0, color='gray', linewidth=0.8, linestyle='--')
-plt.axvline(0, color='gray', linewidth=0.8, linestyle='--')
-plt.xlim(-1, 6)
-plt.ylim(0, 5)
-plt.xlabel("x1")
-plt.ylabel("x2")
-plt.title("Zones de décision du modèle (Rouge en dessous, Bleu au-dessus)")
-plt.grid(True, linestyle=':', alpha=0.4)
-plt.legend()
+plt.plot(entree, sortie)
+plt.ylim(-0.5, 1.5)
 plt.show()
+"""

@@ -1,5 +1,3 @@
-import matplotlib.pyplot as plt
-import numpy as np
 from gradient_descent import *
 
 
@@ -24,13 +22,18 @@ class Sequencial:
             self.input = var
 
     def predict(self, input_to_predict):
-        result = np.array([])
+
+        nb_input = len(input_to_predict)
+        nb_sortie = self.layers[-1].neuron_number
+
+        result = np.zeros((nb_input, nb_sortie))
+
         x_var = None
         for i in range(len(input_to_predict)):
             x_var = input_to_predict[i]
             for j in range(len(self.layers)):
                 x_var = self.layers[j].forward(x_var)
-            result = np.append(result, x_var)
+            result[i] = x_var
         return result
 
     def compile(self, loss='', optimizer='gd', metrics=['accuracy']):
@@ -56,16 +59,20 @@ class Dense:
         self.derived_function = lambda x: 1
         match activation_function:
             case "sigmoid":
-                self.function = lambda x: 1 / (1 + np.exp(-x))
+                self.function = lambda x: 1 / (1 + np.exp(-np.clip(x, -500, 500)))
                 self.derived_function = lambda x: self.function(x) * (1 - self.function(x))
             case "relu":
                 self.function = lambda x: np.where(x > 0, x, 0.0)
                 self.derived_function = lambda x: np.where(x < 0, 0.0, 1.0)
             case "softmax":
-                def softmax_derivative(s):
-                    s.reshape(-1, 1)
+                def softmax(x):
+                    exps = np.exp(x - np.max(x, axis=0, keepdims=True))
+                    return exps / np.sum(exps, axis=0, keepdims=True)
+
+                def softmax_derivative(x):
+                    s = softmax(x).reshape(-1, 1)
                     return np.diagflat(s) - np.dot(s, s.T)
-                self.function = lambda x: np.exp(x) / np.sum(np.exp(x))
+                self.function = softmax
                 self.derived_function = softmax_derivative
 
     def __repr__(self):
@@ -73,7 +80,11 @@ class Dense:
 
     def built(self, number_prev_parameters):
         self.is_built = True
-        self.weights = [[[1 for i in range(self.neuron_number)] for j in range(number_prev_parameters)], [0 for i in range(self.neuron_number)]]
+        std = np.sqrt(2.0 / number_prev_parameters)
+        self.weights = [
+            np.random.randn(number_prev_parameters, self.neuron_number) * std,
+            np.zeros(self.neuron_number),
+        ]
 
     def set_weights(self, weights):
         self.weights = weights
