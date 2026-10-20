@@ -8,8 +8,6 @@ def normal_gradient_descent(layers, input, X_train, Y_train):
     for k in range(epoch):
         print("epoch : ", k)
 
-        """for l in range(len(layers)):
-            layers[l].new_weights = [np.copy(w) for w in layers[l].weights]""" #pour la descente simple
         for i in range(len(X_train)):
             value = X_train[i]
             for j in range(len(layers)):
@@ -39,7 +37,5 @@ def normal_gradient_descent(layers, input, X_train, Y_train):
                     gradient = np.dot(old_weight_matrix, gradient)
 
 
-        """for l in range(len(layers)):
-            layers[l].weights = [np.copy(w) for w in layers[l].new_weights]""" # aussi pour la descente simple
 
     return layers
