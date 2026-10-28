@@ -36,20 +36,18 @@ class Sequencial:
             result[i] = x_var
         return result
 
-    def compile(self, loss='', optimizer='gd', metrics=['accuracy']):
+    def compile(self, loss='', optimizer='sgd', metrics=['accuracy']):
         self.optimizer = optimizer
 
     def fit(self, X_train, Y_train):
         if self.is_built:
             match self.optimizer:
-                case 'gd':
+                case 'sgd':
                     self.layers = normal_gradient_descent(self.layers, self.input, X_train, Y_train)
 
 class Dense:
     def __init__(self, neuron_number, activation_function):
         self.weights = []
-        self.new_weights = []
-        self.drond_g_current = []
 
         self.matrix_product = []
         self.is_built = False

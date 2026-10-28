@@ -2,9 +2,8 @@ import numpy as np
 
 
 def normal_gradient_descent(layers, input, X_train, Y_train):
-    epoch = 10
+    epoch = 5
     delta = 0.01
-    inv_nb_elements = 1
     for k in range(epoch):
         print("epoch : ", k)
 
@@ -29,8 +28,8 @@ def normal_gradient_descent(layers, input, X_train, Y_train):
 
                 old_weight_matrix = layers[j].weights[0].copy()
 
-                layers[j].weights[0] -= inv_nb_elements * delta * np.outer(weights, gradient)
-                layers[j].weights[1] -= inv_nb_elements * delta * gradient
+                layers[j].weights[0] -= delta * np.outer(weights, gradient)
+                layers[j].weights[1] -= delta * gradient
 
 
                 if j > 0:

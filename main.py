@@ -11,13 +11,12 @@ X_train = list_train_image_x.copy()/255
 Y_train = np.eye(10)[list_train_image_y]
 
 
-nb_neurons = 8
+nb_neurons = 64
 model = Sequencial()
 model.add(Input(shape=784))
 model.add(Dense(nb_neurons, 'sigmoid'))
-model.add(Dense(nb_neurons, 'sigmoid'))
 model.add(Dense(10, 'softmax'))
-model.compile("gd")
+model.compile("sgd")
 
 
 model.fit(X_train, Y_train)
