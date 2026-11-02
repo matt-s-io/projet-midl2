@@ -10,7 +10,7 @@ Subject name 1 and Subject name 2
 
 1) [Les bases d'un réseau de neurones]()
 	(Couche d'entrée, cachés, sortie, fonction d'activations)
-2) [L'apprentissage d'un réseau]
+2) [L'apprentissage d'un réseau]()
 	(Fonction de coût, descente de gradient, rétro propagation)
 3) [Analyse des résultats]
 	(impact des paramètres pour le temps d'apprentissage/précision)
@@ -124,3 +124,45 @@ $$
 $$
 
 $$
+
+## 2. L'apprentissage d'un réseau
+### 2.1 Fonction de coût
+Chaque neurone du réseau applique la composée entre une fonction d'activation et une fonction affine. À l'échelle d'une couche 
+transforme un vecteur d'entrée en un vecteur de sortie. Par composition successive des couches, le réseau complet peut être modélisé
+par une fonction vectorielle F, qui prend en paramètre X un vecteur, W ses poids et B ses biais. La prédiction du réseau s'écrit
+$\hat{Y} = F(X; W, B)$.
+
+Pour pouvoir évaluer la précision du réseau, on va utiliser la fonction coût qui mesure l'écart entre la prédiction du réseau $\hat{Y}$
+et la valeur attendue $Y$ sur un ensemble de n donnée d'entrainement {$(X_i, Y_i), \forall i \in \mathbb{N}, 1\le i \le n$}.
+Il existe plusieurs moyens de calculer le coût :
+- L'erreur absolue moyenne (Mean Absolute Error - MAE) :
+$$MAE=\frac{1}{n}\sum_{i=1}^{n} \vert F(X_i; W, B) - Y_i \vert$$
+- L'erreur quadratique moyenne (Mean Square Error - MSE):
+$$MSE=\frac{1}{n}\sum_{i=1}^{n} (F(X_i; W, B) - Y_i)^2$$
+
+### 2.2 La descente de gradient
+La descente de gradient consiste à trouver les variables W et B de façon à minimiser au maximum la fonction coût de F.
+Il n'est pas possible de résoudre analytiquement l'équation du minimum, alors on utilise des algorithmes itératif basé sur le
+gradient. Le gradient de la fonction coût est un vecteur basé sur les dérivées partielles par rapport à chacun des paramètres.
+Il indique la direction de la pente la plus forte, donc en utilisant l'opposé, à chaque itération on se rapproche un peu plus
+du minimum. Pour éviter un oscillement autour d'un minimum, on utilise $\delta$, un pas permettant de régler la vitesse à 
+laquelle on converge vers le minimum.
+
+Il existe trois variantes principales :
+- La descente de gradient classique :
+Le gradient est calculé sur l'ensemble du jeu de donnée avant la mise à jour des poids. Cela demande un grande quantité de 
+mémoire vive et de temps.
+- La descente de gradient stochastique :
+Les poids sont mis à jour après le passage sur chaque élément du jeu de donnée. Cela permet d'économiser la mémoire et d'aller plus vite mais
+la trajectoire oscille fortement.
+- La descente de gradient par mini-lots :
+Les poids sont mis à jour après le passage sur un groupe du jeu de donnée, souvent de taille se situant entre 32 et 512 pour
+profiter au mieux de l'accélération matérielle.
+
+
+### 2.3 La rétro-propagation
+Pour appliquer un algorithme de descente de gradient, il est nécessaire de calculer la dérivée du coût par rapport à chaque
+variable de chaque couche du réseau de neurones. C'est le rôle de l'algorithme de rétro-propagation. Il se décompose en deux étape:
+-Passe avant (forward pass) : Le réseau prédit une sortie selon l'entrée donnée.
+-Passe arrière (backward pass) : En utilisant la règle de dérivation en chaîne, on calcule les dérivées partielles pour chaque poids
+en partant de la couche de sortie vers la couche d'entrée.
