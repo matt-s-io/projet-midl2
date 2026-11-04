@@ -1,7 +1,7 @@
 from gradient_descent import *
 
 
-class Sequencial():
+class Sequential():
     """
     Args:
         nb_neurons (int) : Nombre de neuronnes pour les couches cachées
@@ -80,6 +80,7 @@ class Dense:
         self.activation_function = activation_function
         self.function = lambda x: x
         self.derived_function = lambda x: 1
+        
         match activation_function:
             case "sigmoid":
                 self.function = lambda x: 1 / (1 + np.exp(-np.clip(x, -500, 500)))
@@ -97,7 +98,9 @@ class Dense:
                     return np.diagflat(s) - np.dot(s, s.T)
                 self.function = softmax
                 self.derived_function = softmax_derivative
-
+            case _ : 
+                print("Fonction non reconnue ! La fonction d'activation (identitée) est utilisée.")
+            
     def __repr__(self):
         return str(self.weights)
 
