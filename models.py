@@ -13,7 +13,7 @@ class Sequential():
     """
     def __init__(self, nb_neurons : int, nb_layers : int, activation_function: str, epochs: int, delta:float, shape=784):
         
-        self.nbloops = epochs
+        self.epochs = epochs
         self.delta = delta
         self.layers = np.array([])
         self.input = None
@@ -58,7 +58,7 @@ class Sequential():
         return result
 
     def fit(self, X_train, Y_train):
-        self.layers = normal_gradient_descent(self.layers, X_train, Y_train, self.nbloops, self.delta)
+        self.layers = normal_gradient_descent(self.layers, X_train, Y_train, self.epochs, self.delta)
         
 
 class Dense:

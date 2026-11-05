@@ -1,9 +1,9 @@
 import numpy as np
 
-def normal_gradient_descent(layers, X_train, Y_train, nb_loops, delta):
+def normal_gradient_descent(layers, X_train, Y_train, epochs, delta):
     
-    for i in range(nb_loops):
-        print(f"Boucle d'apprentissage {i+1}/{nb_loops} en cours...")
+    for i in range(epochs):
+        print(f"Boucle d'apprentissage {i+1}/{epochs} en cours...")
 
         for i in range(len(X_train)):
             value = X_train[i]
