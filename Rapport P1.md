@@ -142,15 +142,15 @@ $$MSE=\frac{1}{n}\sum_{i=1}^{n} (F(X_i; W, B) - Y_i)^2$$
 
 ### 2.2 La descente de gradient
 La descente de gradient consiste à trouver les variables W et B de façon à minimiser au maximum la fonction coût de F.
-Il n'est pas possible de résoudre analytiquement l'équation du minimum, alors on utilise des algorithmes itératif basé sur le
+Il n'est pas possible de résoudre analytiquement l'équation du minimum, alors on utilise des algorithmes itératifs basé sur le
 gradient. Le gradient de la fonction coût est un vecteur basé sur les dérivées partielles par rapport à chacun des paramètres.
-Il indique la direction de la pente la plus forte, donc en utilisant l'opposé, à chaque itération on se rapproche un peu plus
+Il indique la direction de la pente la plus forte, donc en utilisant l'opposé, à chaque itération, on se rapproche un peu plus
 du minimum. Pour éviter un oscillement autour d'un minimum, on utilise $\delta$, un pas permettant de régler la vitesse à 
 laquelle on converge vers le minimum.
 
 Il existe trois variantes principales :
 - La descente de gradient classique :
-Le gradient est calculé sur l'ensemble du jeu de donnée avant la mise à jour des poids. Cela demande un grande quantité de 
+Le gradient est calculé sur l'ensemble du jeu de donnée avant la mise à jour des poids. Cela demande une grande quantité de 
 mémoire vive et de temps.
 - La descente de gradient stochastique :
 Les poids sont mis à jour après le passage sur chaque élément du jeu de donnée. Cela permet d'économiser la mémoire et d'aller plus vite mais
@@ -162,7 +162,22 @@ profiter au mieux de l'accélération matérielle.
 
 ### 2.3 La rétro-propagation
 Pour appliquer un algorithme de descente de gradient, il est nécessaire de calculer la dérivée du coût par rapport à chaque
-variable de chaque couche du réseau de neurones. C'est le rôle de l'algorithme de rétro-propagation. Il se décompose en deux étape:
--Passe avant (forward pass) : Le réseau prédit une sortie selon l'entrée donnée.
--Passe arrière (backward pass) : En utilisant la règle de dérivation en chaîne, on calcule les dérivées partielles pour chaque poids
+variable de chaque couche du réseau de neurones. C'est le rôle de l'algorithme de rétro-propagation. Il se décompose en deux étapes :
+
+- Passe avant (forward pass) : Le réseau prédit une sortie selon l'entrée donnée.
+- Passe arrière (backward pass) : En utilisant la règle de dérivation en chaîne, on calcule les dérivées partielles pour chaque poids
 en partant de la couche de sortie vers la couche d'entrée.
+
+La règle de dérivation en chaine est un théorème nous donnant la possibilité d'évaluer la dérivée d'une fonction composée. 
+La dérivée permet de mesurer l'influence de la variable sur la sortie. Lorsque plusieurs transformations s'enchaînent l'influence 
+de la variable sur le résultat final équivaut aux produits du taux d'influence de chaque transformation intermédiaire.
+
+Pour la fonction coût C définit par les fonctions h et g, et le poids a, l'impact d'une variation de la variable s'écrit :
+$$
+\frac{\partial C}{\partial a} = \frac{\partial C}{\partial h} \cdot \frac{\partial h}{\partial g} \cdot \frac{\partial g}{\partial a}
+$$
+
+Chacun des termes du produit correspond à un élément bien défini :
+1. $\frac{\partial C}{\partial h}$ correspond à l'erreur rétro-propagée de la couche suivante.
+2. $\frac{\partial h}{\partial g}$ est la dérivée de la fonction d'activation locale.
+3. $\frac{\partial g}{\partial a}$ représente les données de la couche précédente.

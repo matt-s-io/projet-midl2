@@ -66,6 +66,8 @@ class Dense:
         self.weights = []
 
         self.matrix_product = []
+        self.function_value = []
+        self.derived_value = []
         self.is_built = False
         self.neuron_number = neuron_number
         self.activation_function = activation_function
@@ -108,7 +110,9 @@ class Dense:
 
     def forward(self, echantillion_x_i):
         self.matrix_product =  np.dot(echantillion_x_i, self.weights[0]) + self.weights[1]
-        return self.function(self.matrix_product)
+        self.function_value = self.function(self.matrix_product)
+        self.derived_value = self.derived_function(self.matrix_product)
+        return self.function_value
 
 class Input:
     def __init__(self, shape=0):

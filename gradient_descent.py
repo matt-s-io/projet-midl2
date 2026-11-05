@@ -2,8 +2,8 @@ import numpy as np
 
 def normal_gradient_descent(layers, X_train, Y_train, epochs, delta):
     
-    for i in range(epochs):
-        print(f"Boucle d'apprentissage {i+1}/{epochs} en cours...")
+    for k in range(epochs):
+        print(f"Boucle d'apprentissage {k+1}/{epochs} en cours...")
 
         for i in range(len(X_train)):
             value = X_train[i]
@@ -16,22 +16,22 @@ def normal_gradient_descent(layers, X_train, Y_train, epochs, delta):
             for j in range(len(layers)-1, -1, -1):
 
                 if layers[j].activation_function == "softmax":
-                    gradient = np.dot(layers[j].derived_function(layers[j].matrix_product), gradient.reshape(-1, 1)).flatten()
+                    gradient = np.dot(layers[j].derived_value, gradient.reshape(-1, 1)).flatten()
                 else:
-                    gradient = gradient * layers[j].derived_function(layers[j].matrix_product)
+                    gradient = gradient * layers[j].derived_value
                 if j==0:
                     weights = X_train[i]
                 else:
-                    weights = layers[j-1].function(layers[j-1].matrix_product)
+                    weights = layers[j-1].function_value
+                if j > 0:
+                    next_gradient = np.dot(layers[j].weights[0], gradient)
 
-                old_weight_matrix = layers[j].weights[0].copy()
-
-                layers[j].weights[0] -= delta * np.outer(weights, gradient)
+                layers[j].weights[0] -= delta * weights[:, np.newaxis] * gradient #ou utiliser np.outer(weights, gradient)
                 layers[j].weights[1] -= delta * gradient
 
 
                 if j > 0:
-                    gradient = np.dot(old_weight_matrix, gradient)
+                    gradient = next_gradient
 
 
 
