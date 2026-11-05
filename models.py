@@ -7,13 +7,13 @@ class Sequential():
         nb_neurons (int) : Nombre de neuronnes pour les couches cachées
         nb_layers (int) : Nombre de couches cachées
         activation_fonction ('sigmoid' ou 'relu') : Fonction d'activation
-        nb_loops (int) : nombre de boucles d'apprentissage
+        epochs (int) : nombre d'époques (boucles d'apprentissage)
         delta (int) : facteur de correction
         shape (int) : taille d'une image, par défaut, 28*28 = 784  
     """
-    def __init__(self, nb_neurons : int, nb_layers : int, activation_function: str, nb_loops: int, delta:float, shape=784):
+    def __init__(self, nb_neurons : int, nb_layers : int, activation_function: str, epochs: int, delta:float, shape=784):
         
-        self.nbloops = nb_loops
+        self.nbloops = epochs
         self.delta = delta
         self.layers = np.array([])
         self.input = None
@@ -57,15 +57,6 @@ class Sequential():
             result[i] = x_var
         return result
 
-    # def compile(self, loss='', optimizer='sgd', metrics=['accuracy']):
-    #     self.optimizer = optimizer
-
-    # def fit(self, X_train, Y_train):
-    #     if self.is_built:
-    #         match self.optimizer:
-    #             case 'sgd':
-    #                 self.layers = normal_gradient_descent(self.layers, X_train, Y_train, self.nbloops, self.delta)
-    
     def fit(self, X_train, Y_train):
         self.layers = normal_gradient_descent(self.layers, X_train, Y_train, self.nbloops, self.delta)
         

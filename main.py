@@ -1,4 +1,4 @@
-from models import Sequencial
+from models import Sequential
 import numpy as np
 import images
 import time, random
@@ -13,7 +13,7 @@ X_train = list_train_image_x.copy()/255
 Y_train = np.eye(10)[list_train_image_y]
 
 # Paramétrage du modèle
-model = Sequencial(nb_neurons=32, nb_layers=2, activation_function='relu', nb_loops=5, delta=0.01)
+model = Sequential(nb_neurons=32, nb_layers=3, activation_function='relu', epochs=5, delta=0.01)
 
 t_d = time.time()
 model.fit(X_train, Y_train)
