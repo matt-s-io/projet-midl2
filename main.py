@@ -21,6 +21,7 @@ t_f = time.time()
 print(f"Durée d'apprentissage : {t_f - t_d} secondes.")
 
 
+
 print("Début de la phase de test automatique.")
 list_test_image_x = images.load_mnist_idx("t10k-images.idx3-ubyte")
 X_test = list_test_image_x.copy()/255
@@ -37,8 +38,7 @@ for i in range(N2):
         right_ones += 1
 
 print(f"Proportion des valeurs prédites : {[v/N2 for v in value_list] }")
-
-print(f"Taux de bonnes estimations : {right_ones*100/N2}% ")
+print(f"Taux de bonnes réponses sur le jeu de test : {right_ones*100/N2}% ")
 
 while True:
     np.set_printoptions(suppress=True, precision=5)
@@ -46,10 +46,11 @@ while True:
     if num >= 0 and num < N2:
         x = model.predict([X_test[num]])
         print(f"Prédiction : {np.argmax(x[0])} (Label : {Y_test[num]})\nPrediction exacte : \n {x}\n")
+
     elif num == -2 :
         i = 0
         while i != 3:
-            r = random.randint(0, 9999)
+            r = random.randint(0, len(X_test) - 1)
             x = model.predict([X_test[r]])
             if(np.argmax(x[0]) != Y_test[r]):
                 print(f"Exemple d'échec n°{i+1} (id_img {r}) : {np.argmax(x[0])} (Label : {Y_test[r]})\nPrediction exacte : \n {x}\n")

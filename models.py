@@ -57,9 +57,20 @@ class Sequential():
             result[i] = x_var
         return result
 
-    def fit(self, X_train, Y_train):
-        self.layers = normal_gradient_descent(self.layers, X_train, Y_train, self.epochs, self.delta)
+    # def test(self, input_to_predict, label):
+    #     """_summary_
+    #         Renvoie un booléen correspondant à la bonne prédiction ou non du modèle
+
+    #     Returns : 
+
+    #     """
         
+    #     r = self.predict(input_to_predict)
+    #     return (np.argmax(r[0]) == label)
+
+    def fit(self,  X_train, Y_train):
+        self.layers, precison_interne = normal_gradient_descent(self, self.layers, X_train, Y_train, self.epochs, self.delta)
+        return precison_interne
 
 class Dense:
     def __init__(self, neuron_number, activation_function):
