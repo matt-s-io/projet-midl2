@@ -1,6 +1,5 @@
 Subject name 1 and Subject name 2
 
-
 # Projet MIDL 2 - Rapport de la 1ere Partie
 
 *Note sur l'usage des LLM dans le cadre du projet*
@@ -8,13 +7,30 @@ Subject name 1 and Subject name 2
 
 ## Plan (à modifier si besoin)
 
-1) [Les bases d'un réseau de neurones]()
-	(Couche d'entrée, cachés, sortie, fonction d'activations)
-2) [L'apprentissage d'un réseau]()
-	(Fonction de coût, descente de gradient, rétro propagation)
-3) [Analyse des résultats]
-	(impact des paramètres pour le temps d'apprentissage/précision)
-4) [Références]
+[[#1. Les bases d'un réseau de neurones]] ^99bf56
+- [[#1.1 - Les composantes principales]]
+- [[#1.2 - Liens avec notre projet]]
+- [[#1.3 - Calcul des valeurs d'un neurone]]
+- [[#1.4 - Fonction d'activation]]
+
+
+[[#2. L'apprentissage d'un réseau]]
+- [[#2.1 Fonction de coût]]
+- [[#2.2 La descente de gradient]]
+- [[#2.3 La rétro-propagation]]
+
+
+[[#3 - Analyse des résultats]]
+- [[#3.1 - Un regard rapide sur les performances du modèle]]
+- [[#3.2 - Exemple d'échecs du modèle]]
+
+
+[[#Annexes]]
+
+
+[[#Références]]
+
+
 
 <div style="break-after: page;"></div>
 
@@ -121,11 +137,16 @@ $$
 \sum_{i=1}^{k} softmax(z)_{i}=\sum_{i=1}^{k} \left( \frac{e^{ z_{i} }}{\sum_{j=1}^{k} e^{ z_{j} }} \right)=\frac{\sum_{i=1}^{k} e^{ z_{i} }}{\sum_{j=1}^{k}e^{ z_{j} }}=1 
 $$
 
-$$
-
-$$
+<div style="break-after: page;"></div>
 
 ## 2. L'apprentissage d'un réseau
+
+Lors de l'initialisation du modèle, les poids sont déterminés aléatoirement, car on ne les connais pas à l'avance. Par conséquent, au début le modèle va prédire des résultats en fonction de cet aléatoire, et aura donc raison seulement dans 10% des cas. L'enjeu principal est donc d'ajuster ces poids afin d'avoir un modèle le plus précis possible. Pour cela, nous utilisons les mathématiques, notamment des outils analytiques, que nous allons traiter dans cette partie.
+
+Exemple de prédiction aléatoire **pour la même image** (id: 4, label: 4):  
+- {0.07048, 0.15527, 0.06311, 0.07153, 0.1561,  0.11585, 0.07145, 0.12189, 0.07211, 0.10222}
+- {0.12459, 0.10257, 0.18857, 0.07853, 0.10635, 0.11012, 0.06052, 0.04598, 0.1006, 0.08215}
+Aucun choix ne se distingue concrètement, et le résultat dépend uniquement de l'initialisation aléatoire.
 ### 2.1 Fonction de coût
 Chaque neurone du réseau applique la composée entre une fonction d'activation et une fonction affine. À l'échelle d'une couche 
 transforme un vecteur d'entrée en un vecteur de sortie. Par composition successive des couches, le réseau complet peut être modélisé
@@ -181,3 +202,98 @@ Chacun des termes du produit correspond à un élément bien défini :
 1. $\frac{\partial C}{\partial h}$ correspond à l'erreur rétro-propagée de la couche suivante.
 2. $\frac{\partial h}{\partial g}$ est la dérivée de la fonction d'activation locale.
 3. $\frac{\partial g}{\partial a}$ représente les données de la couche précédente.
+
+
+<div style="break-after: page;"></div>
+
+## 3 - Analyse des résultats
+### 3.1 - Un regard rapide sur les performances du modèle
+Lorsque les paramètres sont assez optimisés, il reste à vérifier que le réseau ait bien appris. Pour cela, nous utilisons un jeu de données distinct que le jeu de données utilisé pour l'entraînement. Cela sert à vérifier que le modèle n'est pas en surapprentissage, c'est à dire qu'il ne soit pas trop dépendant des données d'entrainement. Pour estimer le taux de bonnes réponses d'un modèle, il suffit d'appliquer la formule suivante : 
+$$
+\tau =  \frac{\text{ nombre de bonnes réponses}}{\text{nombre d'images de test}}
+$$
+
+
+Pour évaluer les capacités du réseau, nous avons lancé des entraînement en faisant varier les hyperparamètres. Les différents résultats sont à retrouver dans le [[#Document 1]] de la pane d'annexes. Le [[#Document 2]] s'intéresse à l'évolution de la précision du modèle au cours de son apprentissage. Si le modèle est très précis lors de son apprentissage, mais échoue lors de la phase de test, alors il est en surapprentissage. 
+
+
+Au travers de ces expériences, nous pouvons soulever quelques remarques : 
+
+
+- Comme le jeu de données d'entraînement fait 60 000 images, et que l'apprentissage se fait image par image, le surajustement ne se manifeste pas, sauf lorsque le nombre d'images données lors de l'entraînement est fortement réduit.
+- Le nombre de neurones par couche cachée est l'hyperparamètre le plus impactant, tant au niveau du taux de réussite que pour le temps d'apprentissage. Ce n'est pas un résultat étonnant, car notre réseau est dense, donc une quantité plus importante de neurones par couche cachée fait exploser le nombre de paramètres, notamment entre la couche d'entrée et la première couche cachée. Plus de poids augmente la précision, mais aussi le temps de calcul.
+- Le nombre de couches cachées n'a pas besoin d'être très élevé, au contraire. Comme vu précédemment, la dérivée de la sigmoïde tend rapidement vers 0, et la dérivée de ReLU vaut 0 lorsque l'on rencontre des valeurs négatives. Un nombre disproportionné de couches cachées accentue ce phénomène, et, in fine, les premières couches cachées ne sont jamais mises à jour, ce qui dégrade les performances du modèle au cours des époques (comme l'illustre le document 2). **Ici, renflouer la partie [[#2.2 La descente de gradient]]. Supprimer ceci après**
+- Le nombre d'époques n'a pas besoin d'être élevé, 2 suffisent pour la sigmoïde et même 1 seule pour ReLU peut être satisfaisant. Ceci est possible grâce aux 60 000 images de tests qui ajustent individuellement les poids, ce qui fait déjà assez de correction pour avoir un modèle fonctionnel. La différence entre les 2 fonctions d'activation est due au fait que la dérivée de la sigmoïde est toujours positive, mais proche de 0, donc l'apprentissage se fait plus lentement mais sûrement.
+- Un modèle qui utilise ReLU est bien plus rapide qu'avec la fonction sigmoïde, car c'est une fonction très simple à calculer, de même pour sa dérivée. Cumulé avec le point précédent, il est donc naturel que cette fonction ait remplacé la sigmoïde, mais qu'elle doive être modifiée pour les plus gros modèles (cf. dernier test).
+
+
+*Bien évidemment, cette analyse reste très superficielle, et nécessite un approfondissement est nécessaire pour en tirer des conclusions plus formelles. Cet partie était une première ébauche, qui peut être une introduction à la seconde partie du projet (cf question 4, "Capacité du réseau et surapprentissage").*
+
+### 3.2 - Exemple d'échecs du modèle
+Observons maintenant ce qu'il se passe lorsque le modèle donne une mauvaise réponse
+Conditions d'entraînement : 3 couches cachées ayant 64 neurones.
+#### Avec la sigmoïde
+Prenons l'image d'indice 2135 du jeu de données de test : 
+
+![[Pasted image 20261105105122.png|156]]
+
+Le modèle a estimé les différentes classes avec cette probabilité $[0.00003, 0.83527, 0.02232, 0.00121, 0.00032, 0.00963, 0.02918, 0.00047, 0.09872 ]$
+
+Ici, il est assez facile de comprendre pourquoi le modèle était presque sûr de voir un 1. La boucle du 6 est très aplatie, les neurones qui influent sur la réponse 6 n'ont pas du avoir un poids important. En revanche, il y a un trait droit qui est plutôt caractéristique du chiffre 1.
+
+Prenons maintenant cette image (indice : 5495)
+![[Pasted image 20261105110053.png|128]]
+$[0.00648, 0.00162, 0.01109, 0.4127,  0.00069, 0.16997, 0.00047, 0.00317, 0.3769, 0.01691]$
+ Ici le modèle a hésité entre le 3 et le 9. Humainement, il est très facile de voir que c'est un 9 mais pour un réseau de neurone, l'hésitation entre les 2 est compréhensible : la courbe est assez courte pour un 9, et le tracé du 3 est aussi présent sur l'image, à condition d'un peu casser la boucle. Sachant que le modèle s'est entraîner sur des images où il y devait y avoir des boucles "superflues", ce résultat n'est pas très étonnant.   
+
+
+#### Avec ReLU
+![[Pasted image 20261105112157.png | 156]]
+
+$[0, 0,0,0.08479, 0., 0.91521, 0,      0,      0, 0 ]$
+
+On constante ici également une forte prédiction sur le 5, alors que c'est un 3. Ici, même pour un humain, l'ambiguïté existe. 
+Mais d'un point de vue général, les réponses ont tendance à plus tranchées qu'avec la fonction d'activation sigmoïde. Ici, on a même des prédiction très proches ou égales à 0. Ceci s'explique car la variation des paramètres lors de l'apprentissage est moins lisse, puisque lors de la descente de gradient la fonction ReLU peut avoir une dérivée nulle, contrairement à la sigmoïde. 
+
+
+
+
+<div style="break-after: page;"></div>
+
+
+## Annexes
+##### Document 1
+| Nombre de couches | Nombre de neurones par couche | Nombre de boucles | Fonction d'activation (couches cachées) | Temps d'apprentissage (\*) | Taux de bonnes réponses (\*\*) |
+| ----------------- | ----------------------------- | ----------------- | --------------------------------------- | -------------------------- | ------------------------------ |
+| 3                 | 32                            | 5                 | Sigmoïde                                | 138s                       | 94.15%                         |
+| 3                 | 32                            | 5                 | ReLU                                    | 44s                        | 96%                            |
+| 2                 | 32                            | 5                 | Sigmoïde                                | 121s                       | 95.09%                         |
+| 2                 | 32                            | 5                 | ReLU                                    | 96s                        | 95.76%                         |
+| 2                 | 16                            | 5                 | Sigmoïde                                | 71s                        | 93.47%                         |
+| 2                 | 16                            | 5                 | ReLU                                    | 47s                        | 93.79%                         |
+| 2                 | 32                            | 3                 | Sigmoïde                                | 71s                        | 93.55%                         |
+| 2                 | 32                            | 3                 | ReLU                                    | 57s                        | 95.79%                         |
+| 2                 | 256                           | 5                 | ReLU                                    | 778s                       | 97.70 %                        |
+| 20                | 32                            | 5                 | ReLU                                    | 260s                       | 9.58%                          |
+| 20                | 32                            | 5                 | Sigmoïde                                | 488s                       | 10..28%                        |
+
+(\*) : Pour un même ordinateur. Il serait possible d'optimiser le temps d'apprentissage (multi threading, apprentissage avec des "paquets d'images" (descente de gradient par lots) au lieu d'une image à la fois, etc...), mais ce n'est pas le but de ce projet.
+
+(\*\*) : Le taux peut varier selon les itérations. Nous prenons une moyenne.
+
+
+
+##### Document 2
+
+![[courbes_apprentissage.png]]
+
+*Evolutions des précisions du modèle en fonction des époques.*
+- Epoque 0 : avant apprentissage
+- Epoque 1 à 5 : précision interne du modèle, évalué sur un échantillon des images d'entrainement
+- Epoque 6 : précision globale sur le jeu de test entier.
+
+<div style="break-after: page;"></div>
+
+
+## Références
+nvierbnerv
