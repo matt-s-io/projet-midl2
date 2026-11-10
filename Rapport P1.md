@@ -204,8 +204,6 @@ Chacun des termes du produit correspond à un élément bien défini :
 3. $\frac{\partial g}{\partial a}$ représente les données de la couche précédente.
 
 
-<div style="break-after: page;"></div>
-
 ## 3 - Analyse des résultats
 ### 3.1 - Un regard rapide sur les performances du modèle
 Lorsque les paramètres sont assez optimisés, il reste à vérifier que le réseau ait bien appris. Pour cela, nous utilisons un jeu de données distinct que le jeu de données utilisé pour l'entraînement. Cela sert à vérifier que le modèle n'est pas en surapprentissage, c'est à dire qu'il ne soit pas trop dépendant des données d'entrainement. Pour estimer le taux de bonnes réponses d'un modèle, il suffit d'appliquer la formule suivante : 
@@ -241,10 +239,13 @@ Le modèle a estimé les différentes classes avec cette probabilité $[0.00003,
 
 Ici, il est assez facile de comprendre pourquoi le modèle était presque sûr de voir un 1. La boucle du 6 est très aplatie, les neurones qui influent sur la réponse 6 n'ont pas du avoir un poids important. En revanche, il y a un trait droit qui est plutôt caractéristique du chiffre 1.
 
-Prenons maintenant cette image (indice : 5495)
+Prenons maintenant cette image (indice : 5495) : 
+
 ![[Pasted image 20261105110053.png|128]]
-$[0.00648, 0.00162, 0.01109, 0.4127,  0.00069, 0.16997, 0.00047, 0.00317, 0.3769, 0.01691]$
- Ici le modèle a hésité entre le 3 et le 9. Humainement, il est très facile de voir que c'est un 9 mais pour un réseau de neurone, l'hésitation entre les 2 est compréhensible : la courbe est assez courte pour un 9, et le tracé du 3 est aussi présent sur l'image, à condition d'un peu casser la boucle. Sachant que le modèle s'est entraîner sur des images où il y devait y avoir des boucles "superflues", ce résultat n'est pas très étonnant.   
+
+Prédiction : $[0.00648, 0.00162, 0.01109, 0.4127,  0.00069, 0.16997, 0.00047, 0.00317, 0.3769, 0.01691]$
+
+Ici le modèle a hésité entre le 3 et le 9. Humainement, il est très facile de voir que c'est un 9 mais pour un réseau de neurone, l'hésitation entre les 2 est compréhensible : la courbe est assez courte pour un 9, et le tracé du 3 est aussi présent sur l'image, à condition d'un peu casser la boucle. Sachant que le modèle s'est entraîner sur des images où il y devait y avoir des boucles "superflues", ce résultat n'est pas très étonnant.   
 
 
 #### Avec ReLU
@@ -252,7 +253,7 @@ $[0.00648, 0.00162, 0.01109, 0.4127,  0.00069, 0.16997, 0.00047, 0.00317, 0.3769
 
 $[0, 0,0,0.08479, 0., 0.91521, 0,      0,      0, 0 ]$
 
-On constante ici également une forte prédiction sur le 5, alors que c'est un 3. Ici, même pour un humain, l'ambiguïté existe. 
+On constante également une forte prédiction sur le 5, alors que c'est un 3. Ici, même pour un humain, l'ambiguïté existe. 
 Mais d'un point de vue général, les réponses ont tendance à plus tranchées qu'avec la fonction d'activation sigmoïde. Ici, on a même des prédiction très proches ou égales à 0. Ceci s'explique car la variation des paramètres lors de l'apprentissage est moins lisse, puisque lors de la descente de gradient la fonction ReLU peut avoir une dérivée nulle, contrairement à la sigmoïde. 
 
 
@@ -296,4 +297,10 @@ Mais d'un point de vue général, les réponses ont tendance à plus tranchées 
 
 
 ## Références
-nvierbnerv
+- https://exo7math.github.io/deepmath-exo7/
+- https://www.youtube.com/c/3blue1brown
+- https://fr.wikipedia.org/wiki/Fonction_d%27activation et autres pages wikipédia
+- https://fr.linkedin.com/pulse/significance-non-linearity-machine-learning-deep-ajit-jaokar-nakfe?tl=fr
+- https://www.youtube.com/watch?v=9RN2Wr8xvro&t=260s
+- https://codemia.io/knowledge-hub/path/visualize_mnist_dataset_using_opencv_or_matplotlibpyplot
+- https://aws.amazon.com/fr/what-is/hyperparameter-tuning/
