@@ -4,8 +4,8 @@ import images
 import time, random
 
 # Récupération des données
-list_train_image_x = images.load_mnist_idx("train-images.idx3-ubyte")
-list_train_image_y = images.load_mnist_idx("train-labels.idx1-ubyte")
+list_train_image_x = images.load_mnist_idx("data/train-images.idx3-ubyte")
+list_train_image_y = images.load_mnist_idx("data/train-labels.idx1-ubyte")
 N = list_train_image_x.shape[0]
 
 
