@@ -48,18 +48,18 @@ Un neurone est constitué d'un nombre, ainsi que des connexions pondérées avec
 
 L'objectif de cette première partie du projet est de créer un modèle simple permettant d'identifier un chiffre manuscrit écrit sur une grille de $28\times28$ pixels en nuances de gris. Nous utiliserons le jeu de données MNIST. 
 
-Un neurone sur la couche d'entrée aura pour valeur la nuance de gris d'un pixel (entre 0 et 255), qui sera réduit proportionnellement entre $0$ et $1$, afin de ne pas avoir d'explosions dans les calculs (nous y reviendrons). La couche d'entrée sera donc composée de $28^{2}=784$ neurones, les couches intermédiaires auront un nombre arbitraire de neurones (voir le § dédié), et la couche de sortie aura 10 neurones, qui exprimeront le chiffre prédit sous un format qui se rapproche de l'encodage *One-hot*(\*), c'est à dire une matrice $M_{10,1}$ où chaque ligne $i$ indique la probabilité que l'image d'entrée représente le chiffre $(i-1)$ . 
+Un neurone sur la couche d'entrée aura pour valeur la nuance de gris d'un pixel (entre 0 et 255), qui sera réduit proportionnellement entre $0$ et $1$, afin de ne pas avoir d'explosions dans les calculs (nous y reviendrons). La couche d'entrée sera donc composée de $28^{2}=784$ neurones, les couches intermédiaires auront un nombre arbitraire de neurones (voir le § dédié), et la couche de sortie aura 10 neurones, qui exprimeront le chiffre prédit sous un format qui se rapproche de l'encodage *One-hot*(\*), c'est-à-dire une matrice $M_{10,1}$ où chaque ligne $i$ indique la probabilité que l'image d'entrée représente le chiffre $(i-1)$ . 
 
 Exemple $P(x)=\begin{pmatrix}0\\0.9\\0\\0.1\\\dots\end{pmatrix}$ indique que l'image $x$ a $90\%$ de probabilité d'être un 1, et $10\%$ de probabilité d'être un 3. 
 
-Remarque (\*) : les étiquettes seront exprimées sous le vrai format *One-hot*, c'est à dire avec une seule ligne valant 1, et les autres 0. 
+Remarque (\*) : les étiquettes seront exprimées sous le vrai format *One-hot*, c'est-à-dire avec une seule ligne valant 1, et les autres 0. 
 
 
 ### 1.3 - Calcul des valeurs d'un neurone
 
 Chaque neurone transmet sa valeur aux neurones de la couche supérieure, pondérée respectivement par le poids associé (appelé **paramètre**) à chaque connexion. 
 
-Intéressons nous au calcul de la valeur d'un neurone, sur une couche cachée ou de sortie.
+Intéressons-nous au calcul de la valeur d'un neurone, sur une couche cachée ou de sortie.
 
 **Dans un premier temps, on calcule une valeur intermédiaire,  appelée signal de pré-activation.**
 
@@ -89,7 +89,7 @@ B = \begin{pmatrix}
 b_{1}&\dots& b_{m}
 \end{pmatrix} \quad \text{le poids des connexions avec le neurone biais}
 $$
-Ainsi, les valeurs intermédiares de la couche se calculent avec les operations matricielles $Z=XW+B$
+Ainsi, les valeurs intermédiaires de la couche se calculent avec les operations matricielles $Z=XW+B$
 
 Une fois ces calculs faits, les résultats passent par une _fonction d'activation_.
 
@@ -180,7 +180,6 @@ la trajectoire oscille fortement.
 Les poids sont mis à jour après le passage sur un groupe du jeu de donnée, souvent de taille se situant entre 32 et 512 pour
 profiter au mieux de l'accélération matérielle.
 
-
 ### 2.3 La rétro-propagation
 Pour appliquer un algorithme de descente de gradient, il est nécessaire de calculer la dérivée du coût par rapport à chaque
 variable de chaque couche du réseau de neurones. C'est le rôle de l'algorithme de rétro-propagation. Il se décompose en deux étapes :
@@ -203,16 +202,22 @@ Chacun des termes du produit correspond à un élément bien défini :
 2. $\frac{\partial h}{\partial g}$ est la dérivée de la fonction d'activation locale.
 3. $\frac{\partial g}{\partial a}$ représente les données de la couche précédente.
 
+La règle de chaine multiple les dérivées local d'une couche à l'autre. On peut remarquer la dérivée de la fonction d'activation
+sigmoïde tend vers 0 et la dérivée de la fonction d'activation Relu vaut 0 lorsque son paramètre d'entrée est inférieur ou égal à 0.
+Cela implique qu'un nombre de couches caché élevées fait tendre extrêmement rapidement le produit en cascade vers 0. Ce phénomène est
+nommé l'évanescence du gradient (vanishing gradient). Ainsi les premières couches du réseau ne reçoivent presque ou plus de
+correction au fur et à mesure des époques.
+
 
 ## 3 - Analyse des résultats
 ### 3.1 - Un regard rapide sur les performances du modèle
-Lorsque les paramètres sont assez optimisés, il reste à vérifier que le réseau ait bien appris. Pour cela, nous utilisons un jeu de données distinct que le jeu de données utilisé pour l'entraînement. Cela sert à vérifier que le modèle n'est pas en surapprentissage, c'est à dire qu'il ne soit pas trop dépendant des données d'entrainement. Pour estimer le taux de bonnes réponses d'un modèle, il suffit d'appliquer la formule suivante : 
+Lorsque les paramètres sont assez optimisés, il reste à vérifier que le réseau ait bien appris. Pour cela, nous utilisons un jeu de données distinct que le jeu de données utilisé pour l'entraînement. Cela sert à vérifier que le modèle n'est pas en surapprentissage, c'est-à-dire qu'il ne soit pas trop dépendant des données d'entrainement. Pour estimer le taux de bonnes réponses d'un modèle, il suffit d'appliquer la formule suivante : 
 $$
 \tau =  \frac{\text{ nombre de bonnes réponses}}{\text{nombre d'images de test}}
 $$
 
 
-Pour évaluer les capacités du réseau, nous avons lancé des entraînement en faisant varier les hyperparamètres. Les différents résultats sont à retrouver dans le [[#Document 1]] de la pane d'annexes. Le [[#Document 2]] s'intéresse à l'évolution de la précision du modèle au cours de son apprentissage. Si le modèle est très précis lors de son apprentissage, mais échoue lors de la phase de test, alors il est en surapprentissage. 
+Pour évaluer les capacités du réseau, nous avons lancé des entraînements en faisant varier les hyperparamètres. Les différents résultats sont à retrouver dans le [[#Document 1]] de la page d'annexes. Le [[#Document 2]] s'intéresse à l'évolution de la précision du modèle au cours de son apprentissage. Si le modèle est très précis lors de son apprentissage, mais échoue lors de la phase de test, alors il est en surapprentissage. 
 
 
 Au travers de ces expériences, nous pouvons soulever quelques remarques : 
@@ -220,12 +225,12 @@ Au travers de ces expériences, nous pouvons soulever quelques remarques :
 
 - Comme le jeu de données d'entraînement fait 60 000 images, et que l'apprentissage se fait image par image, le surajustement ne se manifeste pas, sauf lorsque le nombre d'images données lors de l'entraînement est fortement réduit.
 - Le nombre de neurones par couche cachée est l'hyperparamètre le plus impactant, tant au niveau du taux de réussite que pour le temps d'apprentissage. Ce n'est pas un résultat étonnant, car notre réseau est dense, donc une quantité plus importante de neurones par couche cachée fait exploser le nombre de paramètres, notamment entre la couche d'entrée et la première couche cachée. Plus de poids augmente la précision, mais aussi le temps de calcul.
-- Le nombre de couches cachées n'a pas besoin d'être très élevé, au contraire. Comme vu précédemment, la dérivée de la sigmoïde tend rapidement vers 0, et la dérivée de ReLU vaut 0 lorsque l'on rencontre des valeurs négatives. Un nombre disproportionné de couches cachées accentue ce phénomène, et, in fine, les premières couches cachées ne sont jamais mises à jour, ce qui dégrade les performances du modèle au cours des époques (comme l'illustre le document 2). **Ici, renflouer la partie [[#2.2 La descente de gradient]]. Supprimer ceci après**
-- Le nombre d'époques n'a pas besoin d'être élevé, 2 suffisent pour la sigmoïde et même 1 seule pour ReLU peut être satisfaisant. Ceci est possible grâce aux 60 000 images de tests qui ajustent individuellement les poids, ce qui fait déjà assez de correction pour avoir un modèle fonctionnel. La différence entre les 2 fonctions d'activation est due au fait que la dérivée de la sigmoïde est toujours positive, mais proche de 0, donc l'apprentissage se fait plus lentement mais sûrement.
+- Le nombre de couches cachées n'a pas besoin d'être très élevé, au contraire. Comme vu précédemment, la dérivée de la sigmoïde tend rapidement vers 0, et la dérivée de ReLU vaut 0 lorsque l'on rencontre des valeurs négatives. Un nombre disproportionné de couches cachées accentue ce phénomène, et, in fine, les premières couches cachées ne sont jamais mises à jour, ce qui dégrade les performances du modèle au cours des époques (comme l'illustre le document 2).
+- Le nombre d'époques n'a pas besoin d'être élevé, 2 suffisent pour la sigmoïde et même 1 seule pour ReLU peut être satisfaisant. Ceci est possible grâce aux 60 000 images de tests qui ajustent individuellement les poids, ce qui fait déjà assez de correction pour avoir un modèle fonctionnel. La différence entre les 2 fonctions d'activation est due au fait que la dérivée de la sigmoïde est toujours positive, mais proche de 0, donc l'apprentissage se fait plus lentement, mais sûrement.
 - Un modèle qui utilise ReLU est bien plus rapide qu'avec la fonction sigmoïde, car c'est une fonction très simple à calculer, de même pour sa dérivée. Cumulé avec le point précédent, il est donc naturel que cette fonction ait remplacé la sigmoïde, mais qu'elle doive être modifiée pour les plus gros modèles (cf. dernier test).
 
 
-*Bien évidemment, cette analyse reste très superficielle, et nécessite un approfondissement est nécessaire pour en tirer des conclusions plus formelles. Cet partie était une première ébauche, qui peut être une introduction à la seconde partie du projet (cf question 4, "Capacité du réseau et surapprentissage").*
+*Bien évidemment, cette analyse reste très superficielle, et nécessite un approfondissement est nécessaire pour en tirer des conclusions plus formelles. Cette partie était une première ébauche, qui peut être une introduction à la seconde partie du projet (cf question 4, "Capacité du réseau et surapprentissage").*
 
 ### 3.2 - Exemple d'échecs du modèle
 Observons maintenant ce qu'il se passe lorsque le modèle donne une mauvaise réponse
@@ -245,7 +250,7 @@ Prenons maintenant cette image (indice : 5495) :
 
 Prédiction : $[0.00648, 0.00162, 0.01109, 0.4127,  0.00069, 0.16997, 0.00047, 0.00317, 0.3769, 0.01691]$
 
-Ici le modèle a hésité entre le 3 et le 9. Humainement, il est très facile de voir que c'est un 9 mais pour un réseau de neurone, l'hésitation entre les 2 est compréhensible : la courbe est assez courte pour un 9, et le tracé du 3 est aussi présent sur l'image, à condition d'un peu casser la boucle. Sachant que le modèle s'est entraîner sur des images où il y devait y avoir des boucles "superflues", ce résultat n'est pas très étonnant.   
+Ici le modèle a hésité entre le 3 et le 9. Humainement, il est très facile de voir que c'est un 9, mais pour un réseau de neurone, l'hésitation entre les 2 est compréhensible : la courbe est assez courte pour un 9, et le tracé du 3 est aussi présent sur l'image, à condition d'un peu casser la boucle. Sachant que le modèle s'est entraîné sur des images avec lesquelles il y devait y avoir des boucles "superflues", ce résultat n'est pas très étonnant.   
 
 
 #### Avec ReLU
@@ -253,10 +258,19 @@ Ici le modèle a hésité entre le 3 et le 9. Humainement, il est très facile d
 
 $[0, 0,0,0.08479, 0., 0.91521, 0,      0,      0, 0 ]$
 
-On constante également une forte prédiction sur le 5, alors que c'est un 3. Ici, même pour un humain, l'ambiguïté existe. 
-Mais d'un point de vue général, les réponses ont tendance à plus tranchées qu'avec la fonction d'activation sigmoïde. Ici, on a même des prédiction très proches ou égales à 0. Ceci s'explique car la variation des paramètres lors de l'apprentissage est moins lisse, puisque lors de la descente de gradient la fonction ReLU peut avoir une dérivée nulle, contrairement à la sigmoïde. 
+On constate également une forte prédiction sur le 5, alors que c'est un 3. Ici, même pour un humain, l'ambiguïté existe. 
+Mais d'un point de vue général, les réponses ont tendance à plus tranché qu'avec la fonction d'activation sigmoïde. Ici, on a même des prédictions très proches ou égales à 0. Ceci s'explique, car la variation des paramètres lors de l'apprentissage est moins lisse, puisque lors de la descente de gradient la fonction ReLU peut avoir une dérivée nulle, contrairement à la sigmoïde. 
 
+### Conclusion
+Ce projet a permis de réaliser un réseau de neurones dense permettant la reconnaissance de chiffre manuscrits.En utilisant les
+différents les différents procédés comme l'optimisation par descente de gradient et calcul des dérivées par rétropropagation, notre
+modèle parvient à dépasser les 95% de précision sur une base MNIST au bout de quelques époques. Au travers de nos tests, nous avons
+pu conclure qu'un bon calibrage est absolument nécessaire. Le choix de la fonction d'activation entre relu et sigmoïde pour la 
+rapidité de calcul, l'élargissement des couches pour une meilleure prediction et adaptation, mais au prix de la vitesse 
+d'apprentissage et la profondeur de réseau trop importante se heurte au blocage d'entraînement par évanescence du gradient.
 
+à travers ce projet, nous avons pu aborder la question du surapprentissage selon le choix de l'architecture. Nous allons donc
+continuer la partie 2 du projet avec la question 4 : Capacité du réseau et surapprentissage.
 
 
 <div style="break-after: page;"></div>
