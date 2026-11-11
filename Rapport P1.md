@@ -262,8 +262,7 @@ On constate également une forte prédiction sur le 5, alors que c'est un 3. Ici
 Mais d'un point de vue général, les réponses ont tendance à plus tranché qu'avec la fonction d'activation sigmoïde. Ici, on a même des prédictions très proches ou égales à 0. Ceci s'explique, car la variation des paramètres lors de l'apprentissage est moins lisse, puisque lors de la descente de gradient la fonction ReLU peut avoir une dérivée nulle, contrairement à la sigmoïde. 
 
 ### Conclusion
-Ce projet a permis de réaliser un réseau de neurones dense permettant la reconnaissance de chiffre manuscrits.En utilisant les
-différents les différents procédés comme l'optimisation par descente de gradient et calcul des dérivées par rétropropagation, notre
+Ce projet a permis de réaliser un réseau de neurones dense permettant la reconnaissance de chiffre manuscrits. En utilisant les différents procédés comme l'optimisation par descente de gradient et calcul des dérivées par rétropropagation, notre
 modèle parvient à dépasser les 95% de précision sur une base MNIST au bout de quelques époques. Au travers de nos tests, nous avons
 pu conclure qu'un bon calibrage est absolument nécessaire. Le choix de la fonction d'activation entre relu et sigmoïde pour la 
 rapidité de calcul, l'élargissement des couches pour une meilleure prediction et adaptation, mais au prix de la vitesse 
