@@ -23,9 +23,9 @@ print(f"Durée d'apprentissage : {t_f - t_d} secondes.")
 
 
 print("Début de la phase de test automatique.")
-list_test_image_x = images.load_mnist_idx("t10k-images.idx3-ubyte")
+list_test_image_x = images.load_mnist_idx("data/t10k-images.idx3-ubyte")
 X_test = list_test_image_x.copy()/255
-Y_test = images.load_mnist_idx("t10k-labels.idx1-ubyte")
+Y_test = images.load_mnist_idx("data/t10k-labels.idx1-ubyte")
 N2 = list_test_image_x.shape[0]
 right_ones = 0
 
